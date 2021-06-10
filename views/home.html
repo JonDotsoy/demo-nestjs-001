@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <my-app></my-app>
+
+  <script>
+    /**
+     * @param {string} tagElement
+     * @param {(el:HTMLElement) => any} configure
+     */
+    const el = (tagElement, configure) => {
+      const elm = document.createElement(tagElement);
+
+      if (typeof configure === 'function') {
+        configure(elm);
+      }
+
+      return elm;
+    }
+
+    class MyApp extends HTMLElement {
+
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+
+        /** @type {HTMLElement|undefined} */
+        let requestMethodSpam
+
+        /** @type {HTMLElement|undefined} */
+        let requestPathSpam
+
+        /** @type {HTMLElement|undefined} */
+        let requestBodyCode
+
+        /** @type {HTMLElement|undefined} */
+        let codePreviewCode
+
+        this.shadowRoot.append(
+          el('div', (e) => e.append(
+            el('h2', (e) => e.append(requestMethodSpam = el('span'), ' ', requestPathSpam = el('span'))),
+            el('div', e => e.append(el('pre', e => e.append(requestBodyCode = el('code'))))),
+            el('hr'),
+            el('div', e => e.append(el('pre', e => e.append(codePreviewCode = el('code'))))),
+          )),
+        );
+
+        const payload = { "hola": "hola" };
+
+        const req = new Request('/', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        requestMethodSpam.innerText = req.method;
+        requestPathSpam.innerText = req.url;
+        requestBodyCode.innerText = JSON.stringify(payload, null, 2);
+
+        fetch(req)
+          .then(async res => [res, await res.text()])
+          .then(([res, body]) => {
+            codePreviewCode.innerText = JSON.stringify({
+              statusCode: res.status,
+              statusText: res.statusText,
+              payload: body,
+            }, null, 2);
+          });
+      }
+
+    }
+
+    customElements.define('my-app', MyApp);
+  </script>
+
+</body>
+
+</html>

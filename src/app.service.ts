@@ -4,8 +4,6 @@ import { Human } from './dto/human.dto';
 @Injectable()
 export class AppService {
   getHello(payload: Human) {
-    return {
-      payload,
-    };
+    return payload;
   }
 }

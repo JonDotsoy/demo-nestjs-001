@@ -1,16 +1,17 @@
 import { Controller, Post, Get, Body, ValidationPipe } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Human } from './dto/human.dto';
-import { Home } from './views/home';
 import React from 'react';
 import ReactDOM from 'react-dom/server';
+import fs from 'fs';
+import util from 'util';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Post()
-  postHello(
+  async postHello(
     @Body(
       new ValidationPipe({
         transform: true,
@@ -20,11 +21,11 @@ export class AppController {
     )
     human: Human,
   ) {
-    return this.appService.getHello(human);
+    return util.inspect(await this.appService.getHello(human));
   }
 
   @Get()
   getHello() {
-    return ReactDOM.renderToString(React.createElement(Home));
+    return fs.readFileSync(`views/home.html`, 'utf-8');
   }
 }
