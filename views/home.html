@@ -45,12 +45,16 @@
         /** @type {HTMLElement|undefined} */
         let codePreviewCode
 
+        /** @type {HTMLElement|undefined} */
+        let codePreviewCode2
+
         this.shadowRoot.append(
           el('div', (e) => e.append(
             el('h2', (e) => e.append(requestMethodSpam = el('span'), ' ', requestPathSpam = el('span'))),
             el('div', e => e.append(el('pre', e => e.append(requestBodyCode = el('code'))))),
             el('hr'),
             el('div', e => e.append(el('pre', e => e.append(codePreviewCode = el('code'))))),
+            el('div', e => e.append(el('pre', e => e.append(codePreviewCode2 = el('code'))))),
           )),
         );
 
@@ -74,8 +78,9 @@
             codePreviewCode.innerText = JSON.stringify({
               statusCode: res.status,
               statusText: res.statusText,
-              payload: body,
             }, null, 2);
+
+            codePreviewCode2.innerText = body;
           });
       }
 
